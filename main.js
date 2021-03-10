@@ -1,4 +1,4 @@
-const prompt = require('prompt-sync')({sigint: true});
+const prompt = require('prompt-sync')({ sigint: true });
 
 const hat = '^';
 const hole = 'O';
@@ -17,16 +17,16 @@ class Field {
       console.log(this.field[i].join(""));
       i++;
     }
-  //  console.log(this.field[0].join("") + "\n" + this.field[1].join("") + "\n" + this.field[2].join(""));
-  //  console.log("Field has " + rows + " rows.");
-  //  console.log("Field has " + columns + " columns.");
+    //  console.log(this.field[0].join("") + "\n" + this.field[1].join("") + "\n" + this.field[2].join(""));
+    //  console.log("Field has " + rows + " rows.");
+    //  console.log("Field has " + columns + " columns.");
   }
 }
 
-const array1 =  ['*', '░', 'O'];
-const array2 = ['░', 'O', '░'];
-const array3 = ['░', '^', '░'];
-const array4 = ['░', '^', '░'];
+const array1 = ['*', '░', 'O', '░', '░', '░', 'O', 'O', 'O', 'O',];
+const array2 = ['░', '░', '░', '░', 'O', '░', '░', '░', '░', '░',];
+const array3 = ['O', 'O', 'O', 'O', '░', 'O', 'O', '░', 'O', '░',];
+const array4 = ['░', '^', '░', '░', '░', '░', '░', '░', '░', 'O',];
 
 let testField = [array1, array2, array3, array4];
 
