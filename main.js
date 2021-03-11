@@ -7,19 +7,22 @@ const pathCharacter = '*';
 const holeFall = "#";
 const hatOn = "Ô";
 let userInput = "";
+let gameOn = true;
 
 function askUser() {
-  return prompt("Which way? w = \u2191, a = \u2190, s = \u2193, d = \u2192 ");
+  return prompt("Which way? w = \u2191, a = \u2190, s = \u2193, d = \u2192");
 }
 
 class Field {
   constructor(fieldArray) {
     this.field = fieldArray;
   }
+  
   print() {
     let rows = this.field.length;
     //let columns = this.field[0].length;
     let i = 0;
+    console.log("\n");
     while (i < rows) {
       console.log(this.field[i].join(""));
       i++;
@@ -41,7 +44,7 @@ class Field {
       };
     }
     playerPosition = [posRow, posCol]
-    console.log(playerPosition);
+    //console.log(playerPosition);
     return playerPosition;
   }
 
@@ -51,17 +54,27 @@ class Field {
 
     // check if newCoords is hole --> game lost
     if (this.checkForHole(moveTo)) {
-      console.log("Oh noes! You fell into a hole! :( ");
+      this.field[moveTo[0]][moveTo[1]] = holeFall;
+      console.log("Oh noes! You fell into a hole! :( You have lost the game.");
+      gameOn = false;
     }
+
     // check if newCoords is hat --> game won
     else if (this.checkForHat(moveTo)) {
-      console.log("Hooray! You have found the hat! <:D ");
+      this.field[moveTo[0]][moveTo[1]] = hatOn;
+      console.log("Hooray! You have found the hat! <:D You have won the game!");
+      gameOn = false;
+    } else {
+      this.field[moveFrom[0]][moveFrom[1]] = pathCharacter;
+      this.field[moveTo[0]][moveTo[1]] = pathCharacter;
     }
   }
 
   checkForHole(newCoord) {
     let fallInHole = false;
-    if (false) {
+    let coordsToCheck = this.field[newCoord[0]][newCoord[1]];
+    
+    if (coordsToCheck === hole) {
       fallInHole = true;
     }
     return fallInHole;
@@ -69,7 +82,9 @@ class Field {
 
   checkForHat(newCoord) {
     let hatFound = false;
-    if (false) {
+    let coordsToCheck = this.field[newCoord[0]][newCoord[1]];
+    
+    if (coordsToCheck === hat) {
       hatFound = true;
     }
     return hatFound;
@@ -94,9 +109,10 @@ class Field {
         console.log("Please enter a valid command.");
         return
     }
+
     if (playerPosition[0] < 0 || playerPosition[1] < 0) {
-      console.log("Out of bounds.");
-      return 
+      console.log("Out of bounds. You have lost the game.");
+      gameOn = false;
     } else {
       this.paintPlayer(playerPosition);
     }
@@ -114,17 +130,26 @@ let testField = [array1, array2, array3, array4];
 
 //console.log(array1.join("") + "\n" + array2.join("") + "\n" + array3.join(""));
 
+
+
 // create instance field1 of class Field
 let field1 = new Field(testField);
 
-// print the field
-field1.print();
 
-// locate the player
-//field1.locatePlayer();
+
+while (gameOn) {
+  // print the field
+field1.print();
 
 // ask for user input
 userInput = askUser();
 
 // move player on the field
 field1.movePlayer(userInput);
+}
+
+
+
+
+// locate the player
+//field1.locatePlayer();
