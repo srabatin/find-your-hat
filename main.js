@@ -21,109 +21,8 @@ class Field {
     this.cols = 0;
   }
 
-  // prints the field and stores information about dimensions
-  print() {
-    let rows = this.field.length;
-    this.rows = this.field.length;
-    this.cols = this.field[0].length;
-    let i = 0;
-    console.log("\n");
-    while (i < rows) {
-      console.log(this.field[i].join(""));
-      i++;
-    }
-  }
-
-  // find the player for first round
-  initiallyLocatePlayer() {
-    let posRow = 0;
-    let posCol = 0;
-    let position = [];
-    for (let i = 0; i < this.field.length; i++) {
-      if (this.field[i].indexOf(pathCharacter) > -1) {
-        posCol = this.field[i].indexOf(pathCharacter);
-        posRow = i;
-        break;
-      };
-    }
-    position = [posRow, posCol]
-    this.playerPosition = position;
-  }
-
-  // paint the player on the field 
-  paintPlayer() {
-    let pos = this.playerPosition;
-
-    // check if newCoords is hole --> game lost
-    if (this.checkForHole(pos)) {
-      this.field[pos[0]][pos[1]] = holeFall;
-      this.print();
-      console.log("Oh noes! You fell into a hole! :( You have lost the game.");
-      gameOn = false;
-    }
-
-    // check if newCoords is hat --> game won
-    else if (this.checkForHat(pos)) {
-      this.field[pos[0]][pos[1]] = hatOn;
-      this.print();
-      console.log("Hooray! You have found the hat! <:D You have won the game!");
-      gameOn = false;
-    } else {
-      this.field[pos[0]][pos[1]] = pathCharacter;
-    }
-  }
-
-  // check the current position for hole
-  checkForHole(pos) {
-    let fallInHole = false;
-    let coordsToCheck = this.field[pos[0]][pos[1]];
-    if (coordsToCheck === hole) {
-      fallInHole = true;
-    }
-    return fallInHole;
-  }
-
-  // check the current position for hat
-  checkForHat(pos) {
-    let hatFound = false;
-    let coordsToCheck = this.field[pos[0]][pos[1]];
-    if (coordsToCheck === hat) {
-      hatFound = true;
-    }
-    return hatFound;
-  }
-
-  // process the user input and move the player
-  movePlayer(move) {
-    let pos = this.playerPosition;
-    switch (move) {
-      case "w":
-        pos[0]--;
-        break;
-      case "a":
-        pos[1]--;
-        break;
-      case "s":
-        pos[0]++;
-        break;
-      case "d":
-        pos[1]++;
-        break;
-      default:
-        console.log("Please enter a valid command.");
-        return
-    }
-
-    // validate if player move is out of bounds
-    if (pos[0] < 0 || pos[1] < 0 || pos[0] > this.rows -1 || pos[1] > this.cols -1) {
-      console.log("Out of bounds. You have lost the game.");
-      gameOn = false;
-    } else {
-      this.paintPlayer();
-    }
-  }
-
-  static generateField(rows, cols, percentage) { //10, 10, 0.4 gives good results
+  // generate the game field
+  static generateField(rows, cols, percentage) { //10, 10, 0.35 gives good results
     let field = [];
 
     // calculate field parameters
@@ -195,10 +94,123 @@ class Field {
 
   }
 
+  // prints the field and stores information about dimensions
+  print() {
+    let rows = this.field.length;
+    this.rows = this.field.length;
+    this.cols = this.field[0].length;
+    let i = 0;
+    console.log("\n");
+    while (i < rows) {
+      console.log(this.field[i].join(""));
+      i++;
+    }
+  }
+
+  // find the player for first round
+  initiallyLocatePlayer() {
+    let posRow = 0;
+    let posCol = 0;
+    let position = [];
+    for (let i = 0; i < this.field.length; i++) {
+      if (this.field[i].indexOf(pathCharacter) > -1) {
+        posCol = this.field[i].indexOf(pathCharacter);
+        posRow = i;
+        break;
+      };
+    }
+    position = [posRow, posCol]
+    this.playerPosition = position;
+  }
+
+  // process the user input and move the player
+  movePlayer(move) {
+    let pos = this.playerPosition;
+    switch (move) {
+      case "w":
+        pos[0]--;
+        break;
+      case "a":
+        pos[1]--;
+        break;
+      case "s":
+        pos[0]++;
+        break;
+      case "d":
+        pos[1]++;
+        break;
+      default:
+        console.log("Please enter a valid command.");
+        return
+    }
+    this.paintPlayer();
+  }
+
+  // paint the player on the field 
+  paintPlayer() {
+    let pos = this.playerPosition;
+
+    // is new pos a hole? --> game lost!
+    if (this.checkForHole(pos)) {
+      this.field[pos[0]][pos[1]] = holeFall;
+      this.print();
+      console.log("Oh noes! You fell into a hole! :( You have lost the game.");
+      gameOn = false;
+    }
+
+    // is new pos out of bounds? --> game lost!
+    else if (this.checkForBounds(pos)) {
+      this.print();
+      console.log("Out of bounds. You have lost the game.");
+      gameOn = false;
+    }
+
+    // is new pos a hat --> game won!
+    else if (this.checkForHat(pos)) {
+      this.field[pos[0]][pos[1]] = hatOn;
+      this.print();
+      console.log("Hooray! You have found the hat! <:D You have won the game!");
+      gameOn = false;
+    }
+
+    // if new pos is 
+    else {
+      this.field[pos[0]][pos[1]] = pathCharacter;
+    }
+  }
+
+  // check the current position for hole
+  checkForHole(pos) {
+    let fallInHole = false;
+    let coordsToCheck = this.field[pos[0]][pos[1]];
+    if (coordsToCheck === hole) {
+      fallInHole = true;
+    }
+    return fallInHole;
+  }
+  // check if current position off the field
+  checkForBounds(pos) {
+    let outOfBounds = false;
+    if (pos[0] < 0 || pos[1] < 0 || pos[0] > this.rows - 1 || pos[1] > this.cols - 1) {
+      outOfBounds = true;
+    }
+    return outOfBounds;
+  }
+
+  // check the current position for hat
+  checkForHat(pos) {
+    let hatFound = false;
+    let coordsToCheck = this.field[pos[0]][pos[1]];
+    if (coordsToCheck === hat) {
+      hatFound = true;
+    }
+    return hatFound;
+  }
+
 }
 
 // generate field
-let gameField = Field.generateField(10, 10, 0.4);
+let gameField = Field.generateField(10, 10, 0.35);
 
 // create instance field1 of class Field
 let field1 = new Field(gameField);
@@ -213,7 +225,7 @@ while (gameOn) {
   field1.print();
 
   // initially locate the player
-    while (!gameInitialized) {
+  while (!gameInitialized) {
     field1.initiallyLocatePlayer();
     gameInitialized = true;
   }
