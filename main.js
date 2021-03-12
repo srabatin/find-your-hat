@@ -1,5 +1,4 @@
 const prompt = require('prompt-sync')({ sigint: true });
-
 const hat = '^';
 const hole = 'O';
 const fieldCharacter = '\u2591';
@@ -8,7 +7,6 @@ const holeFall = "#";
 const hatOn = "ê";
 let userInput = "";
 let gameOn = true;
-
 function askUser() {
   return prompt("Which way? w = \u2191, a = \u2190, s = \u2193, d = \u2192");
 }
@@ -210,36 +208,42 @@ class Field {
 
 }
 
-// generate field
-let gameField = Field.generateField(10, 10, 0.35);
+// play function
+function playGame(height, width, percentHoles) {
+  // generate field
+  let gameField = Field.generateField(height, width, percentHoles);
 
-// create instance field1 of class Field
-let field1 = new Field(gameField);
+  // create instance field1 of class Field
+  let field1 = new Field(gameField);
 
-// set to false to run initiallyLocatePlayer only once
-let gameInitialized = false;
+  // set to false to run initiallyLocatePlayer only once
+  let gameInitialized = false;
 
-// game loop
-while (gameOn) {
+  // game loop
+  while (gameOn) {
 
-  // print the field
-  field1.print();
+    // print the field
+    field1.print();
 
-  // initially locate the player
-  while (!gameInitialized) {
-    field1.initiallyLocatePlayer();
-    gameInitialized = true;
+    // initially locate the player
+    while (!gameInitialized) {
+      field1.initiallyLocatePlayer();
+      gameInitialized = true;
+    }
+
+    // ask for user input
+    userInput = askUser();
+
+    // move player on the field
+    field1.movePlayer(userInput);
   }
-
-  // ask for user input
-  userInput = askUser();
-
-  // move player on the field
-  field1.movePlayer(userInput);
 }
+
+// call to play the game
+playGame(10, 10, 0.35);
 
 
 // todo:
 // move check for in boundaries in separate method DONE
-// move playgame logic in function and call it
+// move playgame logic in function and call it DONE
 // always only reveal the field characters around the player
