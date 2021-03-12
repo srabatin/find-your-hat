@@ -2,10 +2,10 @@ const prompt = require('prompt-sync')({ sigint: true });
 
 const hat = '^';
 const hole = 'O';
-const fieldCharacter = '░';
+const fieldCharacter = '\u2591';
 const pathCharacter = '*';
 const holeFall = "#";
-const hatOn = "Ô";
+const hatOn = "ê";
 let userInput = "";
 let gameOn = true;
 
@@ -21,6 +21,7 @@ class Field {
     this.cols = 0;
   }
 
+  // prints the field and stores information about dimensions
   print() {
     let rows = this.field.length;
     this.rows = this.field.length;
@@ -31,12 +32,10 @@ class Field {
       console.log(this.field[i].join(""));
       i++;
     }
-    //  console.log(this.field[0].join("") + "\n" + this.field[1].join("") + "\n" + this.field[2].join(""));
-    //  console.log("Field has " + rows + " rows.");
-    //  console.log("Field has " + columns + " columns.");
   }
 
-  initialLocatePlayer() {
+  // find the player for first round
+  initiallyLocatePlayer() {
     let posRow = 0;
     let posCol = 0;
     let position = [];
@@ -48,16 +47,17 @@ class Field {
       };
     }
     position = [posRow, posCol]
-    //console.log(position);
     this.playerPosition = position;
   }
 
+  // paint the player on the field 
   paintPlayer() {
     let pos = this.playerPosition;
 
     // check if newCoords is hole --> game lost
     if (this.checkForHole(pos)) {
       this.field[pos[0]][pos[1]] = holeFall;
+      this.print();
       console.log("Oh noes! You fell into a hole! :( You have lost the game.");
       gameOn = false;
     }
@@ -65,6 +65,7 @@ class Field {
     // check if newCoords is hat --> game won
     else if (this.checkForHat(pos)) {
       this.field[pos[0]][pos[1]] = hatOn;
+      this.print();
       console.log("Hooray! You have found the hat! <:D You have won the game!");
       gameOn = false;
     } else {
@@ -72,6 +73,7 @@ class Field {
     }
   }
 
+  // check the current position for hole
   checkForHole(pos) {
     let fallInHole = false;
     let coordsToCheck = this.field[pos[0]][pos[1]];
@@ -81,6 +83,7 @@ class Field {
     return fallInHole;
   }
 
+  // check the current position for hat
   checkForHat(pos) {
     let hatFound = false;
     let coordsToCheck = this.field[pos[0]][pos[1]];
@@ -90,6 +93,7 @@ class Field {
     return hatFound;
   }
 
+  // process the user input and move the player
   movePlayer(move) {
     let pos = this.playerPosition;
     switch (move) {
@@ -110,6 +114,7 @@ class Field {
         return
     }
 
+    // validate if player move is out of bounds
     if (pos[0] < 0 || pos[1] < 0 || pos[0] > this.rows -1 || pos[1] > this.cols -1) {
       console.log("Out of bounds. You have lost the game.");
       gameOn = false;
@@ -118,7 +123,7 @@ class Field {
     }
   }
 
-  static generateField(rows, cols, percentage) { //10, 10, 0.3
+  static generateField(rows, cols, percentage) { //10, 10, 0.4 gives good results
     let field = [];
 
     // calculate field parameters
@@ -192,30 +197,16 @@ class Field {
 
 }
 
-// Demo arrays for field
-/*
-const array1 = ['░', '*', 'O', '░', '░', '░', 'O', 'O', 'O', 'O',];
-const array2 = ['░', '░', '░', '░', 'O', '░', '░', '░', '░', '░',];
-const array3 = ['O', 'O', 'O', 'O', '░', 'O', 'O', '░', 'O', '░',];
-const array4 = ['░', '^', '░', '░', '░', '░', '░', '░', '░', 'O',];
-*/
-
-// create testField from demo arrays
-/*
-let testField = [array1, array2, array3, array4];
-*/
-
-//console.log(array1.join("") + "\n" + array2.join("") + "\n" + array3.join(""));
-
 // generate field
-let gameField = Field.generateField(10, 10, 0.3);
-
+let gameField = Field.generateField(10, 10, 0.4);
 
 // create instance field1 of class Field
 let field1 = new Field(gameField);
 
-
+// set to false to run initiallyLocatePlayer only once
 let gameInitialized = false;
+
+// game loop
 while (gameOn) {
 
   // print the field
@@ -223,7 +214,7 @@ while (gameOn) {
 
   // initially locate the player
     while (!gameInitialized) {
-    field1.initialLocatePlayer();
+    field1.initiallyLocatePlayer();
     gameInitialized = true;
   }
 
@@ -235,7 +226,7 @@ while (gameOn) {
 }
 
 
-
-
-// locate the player
-//field1.locatePlayer();
+// todo:
+// move check for in boundaries in separate method
+// move playgame logic in function and call it
+// always only reveal the field characters around the player
