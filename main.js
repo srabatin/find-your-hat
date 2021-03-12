@@ -188,6 +188,7 @@ class Field {
     }
     return fallInHole;
   }
+
   // check if current position off the field
   checkForBounds(pos) {
     let outOfBounds = false;
@@ -239,6 +240,6 @@ while (gameOn) {
 
 
 // todo:
-// move check for in boundaries in separate method
+// move check for in boundaries in separate method DONE
 // move playgame logic in function and call it
 // always only reveal the field characters around the player
