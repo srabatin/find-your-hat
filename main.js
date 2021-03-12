@@ -1,9 +1,10 @@
 const prompt = require('prompt-sync')({ sigint: true });
-const hat = '^';
-const hole = 'O';
-const field = '\u2591';
-const path = '*';
-const holeFall = "#";
+const hat = "^";
+const hole = "O";
+const field = "\u2591";
+const player = "\u263B";
+const path = "\u2592";
+const holeFall = "\u271D";
 const hatOn = "ê";
 let userInput = "";
 let gameOn = true;
@@ -29,7 +30,7 @@ class Map {
     let emptyFields = numberOfItems - numberOfHoles - 2; // 68
 
     // generate initial array with all map fields
-    let initialArray = [path, hat];
+    let initialArray = [player, hat];
     for (let i = 0; i < numberOfHoles; i++) {
       initialArray.push(hole);
     }
@@ -102,8 +103,8 @@ class Map {
     let posCol = 0;
     let position = [];
     for (let i = 0; i < this.map.length; i++) {
-      if (this.map[i].indexOf(path) > -1) {
-        posCol = this.map[i].indexOf(path);
+      if (this.map[i].indexOf(player) > -1) {
+        posCol = this.map[i].indexOf(player);
         posRow = i;
         break;
       };
@@ -115,6 +116,7 @@ class Map {
   // process the user input and move the player
   movePlayer(move) {
     let pos = this.playerPosition;
+    let oldPos = pos.map(x => x);
     switch (move) {
       case "w":
         pos[0]--;
@@ -132,30 +134,32 @@ class Map {
         console.log("Please enter a valid command.");
         return
     }
-    this.paintPlayer();
+    this.paintPlayer(oldPos);
   }
 
   // paint the player on the map 
-  paintPlayer() {
+  paintPlayer(oldPos) {
     let pos = this.playerPosition;
 
+    // is new pos out of bounds? --> game lost!
+     if (this.checkForBounds(pos)) {
+      this.print();
+      console.log("Out of bounds. You have lost the game.");
+      gameOn = false;
+    }
+
     // is new pos a hole? --> game lost!
-    if (this.checkForHole(pos)) {
+    else if (this.checkForHole(pos)) {
+      this.map[oldPos[0]][oldPos[1]] = path;
       this.map[pos[0]][pos[1]] = holeFall;
       this.print();
       console.log("Oh noes! You fell into a hole! :( You have lost the game.");
       gameOn = false;
     }
 
-    // is new pos out of bounds? --> game lost!
-    else if (this.checkForBounds(pos)) {
-      this.print();
-      console.log("Out of bounds. You have lost the game.");
-      gameOn = false;
-    }
-
     // is new pos a hat --> game won!
     else if (this.checkForHat(pos)) {
+      this.map[oldPos[0]][oldPos[1]] = path;
       this.map[pos[0]][pos[1]] = hatOn;
       this.print();
       console.log("Hooray! You have found the hat! <:D You have won the game!");
@@ -164,7 +168,8 @@ class Map {
 
     // if new pos is 
     else {
-      this.map[pos[0]][pos[1]] = path;
+      this.map[oldPos[0]][oldPos[1]] = path;
+      this.map[pos[0]][pos[1]] = player;
     }
   }
 
@@ -239,9 +244,10 @@ playGame(10, 10, 0.35);
 move check for in boundaries in separate method DONE
 move playgame logic in function and call it DONE
 rename field to map DONE
-separate player char and path char
-player char = e
-path char = light field
+separate player char and path char DONE
+player char = smiley DONE
+path char = dark field DONE
+fall in hole = cross DONE
 always only reveal the field characters around the player: when painting map, create copy of map array and replace all map fields around player and 8 view-fields with dark-shade char
 count moves to solve map
 ask for player name
