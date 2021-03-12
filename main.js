@@ -237,7 +237,7 @@ function playGame(height, width, percentHoles) {
 }
 
 // call to play the game
-playGame(10, 10, 0.35);
+playGame(20, 50, 0.3);
 
 
 /* todo:
