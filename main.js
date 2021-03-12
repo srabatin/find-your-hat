@@ -16,11 +16,15 @@ function askUser() {
 class Field {
   constructor(fieldArray) {
     this.field = fieldArray;
+    this.playerPosition = [];
+    this.rows = 0;
+    this.cols = 0;
   }
-  
+
   print() {
     let rows = this.field.length;
-    //let columns = this.field[0].length;
+    this.rows = this.field.length;
+    this.cols = this.field[0].length;
     let i = 0;
     console.log("\n");
     while (i < rows) {
@@ -32,10 +36,10 @@ class Field {
     //  console.log("Field has " + columns + " columns.");
   }
 
-  locatePlayer() {
+  initialLocatePlayer() {
     let posRow = 0;
     let posCol = 0;
-    let playerPosition = [];
+    let position = [];
     for (let i = 0; i < this.field.length; i++) {
       if (this.field[i].indexOf(pathCharacter) > -1) {
         posCol = this.field[i].indexOf(pathCharacter);
@@ -43,47 +47,43 @@ class Field {
         break;
       };
     }
-    playerPosition = [posRow, posCol]
-    //console.log(playerPosition);
-    return playerPosition;
+    position = [posRow, posCol]
+    //console.log(position);
+    this.playerPosition = position;
   }
 
-  paintPlayer(newCoords) {
-    let moveFrom = this.locatePlayer();
-    let moveTo = newCoords;
+  paintPlayer() {
+    let pos = this.playerPosition;
 
     // check if newCoords is hole --> game lost
-    if (this.checkForHole(moveTo)) {
-      this.field[moveTo[0]][moveTo[1]] = holeFall;
+    if (this.checkForHole(pos)) {
+      this.field[pos[0]][pos[1]] = holeFall;
       console.log("Oh noes! You fell into a hole! :( You have lost the game.");
       gameOn = false;
     }
 
     // check if newCoords is hat --> game won
-    else if (this.checkForHat(moveTo)) {
-      this.field[moveTo[0]][moveTo[1]] = hatOn;
+    else if (this.checkForHat(pos)) {
+      this.field[pos[0]][pos[1]] = hatOn;
       console.log("Hooray! You have found the hat! <:D You have won the game!");
       gameOn = false;
     } else {
-      this.field[moveFrom[0]][moveFrom[1]] = pathCharacter;
-      this.field[moveTo[0]][moveTo[1]] = pathCharacter;
+      this.field[pos[0]][pos[1]] = pathCharacter;
     }
   }
 
-  checkForHole(newCoord) {
+  checkForHole(pos) {
     let fallInHole = false;
-    let coordsToCheck = this.field[newCoord[0]][newCoord[1]];
-    
+    let coordsToCheck = this.field[pos[0]][pos[1]];
     if (coordsToCheck === hole) {
       fallInHole = true;
     }
     return fallInHole;
   }
 
-  checkForHat(newCoord) {
+  checkForHat(pos) {
     let hatFound = false;
-    let coordsToCheck = this.field[newCoord[0]][newCoord[1]];
-    
+    let coordsToCheck = this.field[pos[0]][pos[1]];
     if (coordsToCheck === hat) {
       hatFound = true;
     }
@@ -91,61 +91,147 @@ class Field {
   }
 
   movePlayer(move) {
-    let playerPosition = this.locatePlayer();
+    let pos = this.playerPosition;
     switch (move) {
       case "w":
-        playerPosition[0]--;
+        pos[0]--;
         break;
       case "a":
-        playerPosition[1]--;
+        pos[1]--;
         break;
       case "s":
-        playerPosition[0]++;
+        pos[0]++;
         break;
       case "d":
-        playerPosition[1]++;
+        pos[1]++;
         break;
       default:
         console.log("Please enter a valid command.");
         return
     }
 
-    if (playerPosition[0] < 0 || playerPosition[1] < 0) {
+    if (pos[0] < 0 || pos[1] < 0 || pos[0] > this.rows -1 || pos[1] > this.cols -1) {
       console.log("Out of bounds. You have lost the game.");
       gameOn = false;
     } else {
-      this.paintPlayer(playerPosition);
+      this.paintPlayer();
     }
   }
+
+  static generateField(rows, cols, percentage) { //10, 10, 0.3
+    let field = [];
+
+    // calculate field parameters
+    let numberOfItems = rows * cols; //zb 100
+    let numberOfHoles = numberOfItems * percentage; // 30
+    let emptyFields = numberOfItems - numberOfHoles - 2; // 68
+
+    // generate initial array with all field elements
+    let initialArray = [pathCharacter, hat];
+    for (let i = 0; i < numberOfHoles; i++) {
+      initialArray.push(hole);
+    }
+    for (let i = 0; i < emptyFields; i++) {
+      initialArray.push(fieldCharacter);
+    }
+
+    // shuffle array with field elements
+    function shuffle(a) {
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+    field = shuffle(initialArray);
+
+    // splice initial array into field
+    function chunkify(a, n, balanced) {
+      if (n < 2)
+        return [a];
+      var len = a.length,
+        out = [],
+        i = 0,
+        size;
+      if (len % n === 0) {
+        size = Math.floor(len / n);
+        while (i < len) {
+          out.push(a.slice(i, i += size));
+        }
+      }
+      else if (balanced) {
+        while (i < len) {
+          size = Math.ceil((len - i) / n--);
+          out.push(a.slice(i, i += size));
+        }
+      }
+      else {
+        n--;
+        size = Math.floor(len / n);
+        if (len % size === 0)
+          size--;
+        while (i < size * n) {
+          out.push(a.slice(i, i += size));
+        }
+        out.push(a.slice(size * n));
+      }
+      return out;
+    }
+    field = chunkify(field, rows, true);
+
+    return field;
+    /*
+    for (let i = 0; i < rows; i++) {
+      for (let j = 0; i < cols; i++) {
+        let char = generateCharacter();
+        field[i][j] = char;
+      }
+    }*/
+
+  }
+
 }
 
 // Demo arrays for field
+/*
 const array1 = ['░', '*', 'O', '░', '░', '░', 'O', 'O', 'O', 'O',];
 const array2 = ['░', '░', '░', '░', 'O', '░', '░', '░', '░', '░',];
 const array3 = ['O', 'O', 'O', 'O', '░', 'O', 'O', '░', 'O', '░',];
 const array4 = ['░', '^', '░', '░', '░', '░', '░', '░', '░', 'O',];
+*/
 
 // create testField from demo arrays
+/*
 let testField = [array1, array2, array3, array4];
+*/
 
 //console.log(array1.join("") + "\n" + array2.join("") + "\n" + array3.join(""));
 
+// generate field
+let gameField = Field.generateField(10, 10, 0.3);
 
 
 // create instance field1 of class Field
-let field1 = new Field(testField);
+let field1 = new Field(gameField);
 
 
-
+let gameInitialized = false;
 while (gameOn) {
+
   // print the field
-field1.print();
+  field1.print();
 
-// ask for user input
-userInput = askUser();
+  // initially locate the player
+    while (!gameInitialized) {
+    field1.initialLocatePlayer();
+    gameInitialized = true;
+  }
 
-// move player on the field
-field1.movePlayer(userInput);
+  // ask for user input
+  userInput = askUser();
+
+  // move player on the field
+  field1.movePlayer(userInput);
 }
 
 
