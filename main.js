@@ -1,8 +1,8 @@
 const prompt = require('prompt-sync')({ sigint: true });
 const hat = '^';
 const hole = 'O';
-const fieldCharacter = '\u2591';
-const pathCharacter = '*';
+const field = '\u2591';
+const path = '*';
 const holeFall = "#";
 const hatOn = "ê";
 let userInput = "";
@@ -11,33 +11,33 @@ function askUser() {
   return prompt("Which way? w = \u2191, a = \u2190, s = \u2193, d = \u2192");
 }
 
-class Field {
-  constructor(fieldArray) {
-    this.field = fieldArray;
+class Map {
+  constructor(mapArray) {
+    this.map = mapArray;
     this.playerPosition = [];
     this.rows = 0;
     this.cols = 0;
   }
 
-  // generate the game field
-  static generateField(rows, cols, percentage) { //10, 10, 0.35 gives good results
-    let field = [];
+  // generate the game map
+  static generateMap(rows, cols, percentage) { //10, 10, 0.35 gives good results
+    let map = [];
 
-    // calculate field parameters
+    // calculate map parameters
     let numberOfItems = rows * cols; //zb 100
     let numberOfHoles = numberOfItems * percentage; // 30
     let emptyFields = numberOfItems - numberOfHoles - 2; // 68
 
-    // generate initial array with all field elements
-    let initialArray = [pathCharacter, hat];
+    // generate initial array with all map fields
+    let initialArray = [path, hat];
     for (let i = 0; i < numberOfHoles; i++) {
       initialArray.push(hole);
     }
     for (let i = 0; i < emptyFields; i++) {
-      initialArray.push(fieldCharacter);
+      initialArray.push(field);
     }
 
-    // shuffle array with field elements
+    // shuffle array with map elements
     function shuffle(a) {
       for (let i = a.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -45,9 +45,9 @@ class Field {
       }
       return a;
     }
-    field = shuffle(initialArray);
+    map = shuffle(initialArray);
 
-    // splice initial array into field
+    // splice initial array into map
     function chunkify(a, n, balanced) {
       if (n < 2)
         return [a];
@@ -79,28 +79,19 @@ class Field {
       }
       return out;
     }
-    field = chunkify(field, rows, true);
-
-    return field;
-    /*
-    for (let i = 0; i < rows; i++) {
-      for (let j = 0; i < cols; i++) {
-        let char = generateCharacter();
-        field[i][j] = char;
-      }
-    }*/
-
+    map = chunkify(map, rows, true);
+    return map;
   }
 
-  // prints the field and stores information about dimensions
+  // prints the map and stores information about dimensions
   print() {
-    let rows = this.field.length;
-    this.rows = this.field.length;
-    this.cols = this.field[0].length;
+    let rows = this.map.length;
+    this.rows = this.map.length;
+    this.cols = this.map[0].length;
     let i = 0;
     console.log("\n");
     while (i < rows) {
-      console.log(this.field[i].join(""));
+      console.log(this.map[i].join(""));
       i++;
     }
   }
@@ -110,9 +101,9 @@ class Field {
     let posRow = 0;
     let posCol = 0;
     let position = [];
-    for (let i = 0; i < this.field.length; i++) {
-      if (this.field[i].indexOf(pathCharacter) > -1) {
-        posCol = this.field[i].indexOf(pathCharacter);
+    for (let i = 0; i < this.map.length; i++) {
+      if (this.map[i].indexOf(path) > -1) {
+        posCol = this.map[i].indexOf(path);
         posRow = i;
         break;
       };
@@ -144,13 +135,13 @@ class Field {
     this.paintPlayer();
   }
 
-  // paint the player on the field 
+  // paint the player on the map 
   paintPlayer() {
     let pos = this.playerPosition;
 
     // is new pos a hole? --> game lost!
     if (this.checkForHole(pos)) {
-      this.field[pos[0]][pos[1]] = holeFall;
+      this.map[pos[0]][pos[1]] = holeFall;
       this.print();
       console.log("Oh noes! You fell into a hole! :( You have lost the game.");
       gameOn = false;
@@ -165,7 +156,7 @@ class Field {
 
     // is new pos a hat --> game won!
     else if (this.checkForHat(pos)) {
-      this.field[pos[0]][pos[1]] = hatOn;
+      this.map[pos[0]][pos[1]] = hatOn;
       this.print();
       console.log("Hooray! You have found the hat! <:D You have won the game!");
       gameOn = false;
@@ -173,21 +164,21 @@ class Field {
 
     // if new pos is 
     else {
-      this.field[pos[0]][pos[1]] = pathCharacter;
+      this.map[pos[0]][pos[1]] = path;
     }
   }
 
   // check the current position for hole
   checkForHole(pos) {
     let fallInHole = false;
-    let coordsToCheck = this.field[pos[0]][pos[1]];
+    let coordsToCheck = this.map[pos[0]][pos[1]];
     if (coordsToCheck === hole) {
       fallInHole = true;
     }
     return fallInHole;
   }
 
-  // check if current position off the field
+  // check if current position off the map
   checkForBounds(pos) {
     let outOfBounds = false;
     if (pos[0] < 0 || pos[1] < 0 || pos[0] > this.rows - 1 || pos[1] > this.cols - 1) {
@@ -199,7 +190,7 @@ class Field {
   // check the current position for hat
   checkForHat(pos) {
     let hatFound = false;
-    let coordsToCheck = this.field[pos[0]][pos[1]];
+    let coordsToCheck = this.map[pos[0]][pos[1]];
     if (coordsToCheck === hat) {
       hatFound = true;
     }
@@ -210,11 +201,11 @@ class Field {
 
 // play function
 function playGame(height, width, percentHoles) {
-  // generate field
-  let gameField = Field.generateField(height, width, percentHoles);
+  // generate map
+  let gameMap = Map.generateMap(height, width, percentHoles);
 
-  // create instance field1 of class Field
-  let field1 = new Field(gameField);
+  // create instance map1 of class Map
+  let map1 = new Map(gameMap);
 
   // set to false to run initiallyLocatePlayer only once
   let gameInitialized = false;
@@ -222,20 +213,21 @@ function playGame(height, width, percentHoles) {
   // game loop
   while (gameOn) {
 
-    // print the field
-    field1.print();
+    // print the map
+    console.clear();
+    map1.print();
 
     // initially locate the player
     while (!gameInitialized) {
-      field1.initiallyLocatePlayer();
+      map1.initiallyLocatePlayer();
       gameInitialized = true;
     }
 
     // ask for user input
     userInput = askUser();
 
-    // move player on the field
-    field1.movePlayer(userInput);
+    // move player on the map
+    map1.movePlayer(userInput);
   }
 }
 
@@ -243,7 +235,15 @@ function playGame(height, width, percentHoles) {
 playGame(10, 10, 0.35);
 
 
-// todo:
-// move check for in boundaries in separate method DONE
-// move playgame logic in function and call it DONE
-// always only reveal the field characters around the player
+/* todo:
+move check for in boundaries in separate method DONE
+move playgame logic in function and call it DONE
+rename field to map
+separate player char and path char
+player char = e
+path char = light field
+always only reveal the field characters around the player: when painting map, create copy of map array and replace all map fields around player and 8 view-fields with dark-shade char
+count moves to solve map
+ask for player name
+save to highscore.txt
+*/
