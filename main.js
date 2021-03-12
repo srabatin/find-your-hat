@@ -238,7 +238,7 @@ playGame(10, 10, 0.35);
 /* todo:
 move check for in boundaries in separate method DONE
 move playgame logic in function and call it DONE
-rename field to map
+rename field to map DONE
 separate player char and path char
 player char = e
 path char = light field
