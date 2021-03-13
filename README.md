@@ -9,6 +9,6 @@
 - fall in hole = cross DONE
 - always only reveal the field characters around the player: when painting map, create copy of map array and replace all map fields around player and 8 view-fields with dark-shade char DONE
 - count moves to solve map DONE
-- ask for player name
+- ask for player name and use it in game messages DONE
 - save to highscore.txt
 - change story from find hat to find hidden chest of gold

@@ -10,7 +10,7 @@ const hatOn = "ê";
 let userInput = "";
 let gameOn = true;
 let moves = 1;
-let userName = "";
+let playerName = "";
 function askUser() {
   return prompt("Which way? w = \u2191, a = \u2190, s = \u2193, d = \u2192");
 }
@@ -177,7 +177,7 @@ class Map {
     if (this.checkForBounds(pos)) {
       gameOn = false;
       this.print();
-      console.log("Out of bounds. You have lost the game, " + userName + ". \nMoves: " + moves);
+      console.log("Out of bounds. You have lost the game, " + playerName + ". \nMoves: " + moves);
     }
 
     // is new pos a hole? --> game lost!
@@ -186,7 +186,7 @@ class Map {
       this.map[oldPos[0]][oldPos[1]] = path;
       this.map[pos[0]][pos[1]] = holeFall;
       this.print();
-      console.log("Oh noes, " + userName + "! You fell into a hole! :( You have lost the game. \nMoves: " + moves);
+      console.log("Oh noes, " + playerName + "! You fell into a hole! :( You have lost the game. \nMoves: " + moves);
     }
 
     // is new pos a hat --> game won!
@@ -196,7 +196,7 @@ class Map {
       this.map[oldPos[0]][oldPos[1]] = path;
       this.map[pos[0]][pos[1]] = hatOn;
       this.print();
-      console.log("Gratulations, " + userName + "! You have found the hat! <:D You have won the game! \nMoves: " + moves);
+      console.log("Gratulations, " + playerName + "! You have found the hat! <:D You have won the game! \nMoves: " + moves);
     }
 
     // if new pos is 
@@ -240,7 +240,7 @@ class Map {
 // play function
 function playGame(height, width, percentHoles) {
   // ask for username
-  userName = prompt("Please enter your name: ");
+  playerName = prompt("Please enter your name: ");
   
   // generate map
   let gameMap = Map.generateMap(height, width, percentHoles);
