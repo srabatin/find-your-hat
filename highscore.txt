@@ -1,1 +1,5 @@
-test
+Simon;3
+Bernd;5
+Klaus;6
+Michi;18
+Hannah;56

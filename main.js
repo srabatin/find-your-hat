@@ -12,20 +12,37 @@ let userInput = "";
 let gameOn = true;
 let moves = 1;
 let playerName = "";
+let highScore = "";
 
 // read highscores
-/*let highScore = fs.readFile("highscore.txt", 'utf8' , (err, data) => {
-  if (err) {
-    console.error(err)
-    return
+function readHighscores() {
+  try {
+    var data = fs.readFileSync('highscore.txt', 'utf8');
+    highScore = data;    
+  } catch(e) {
+    console.log('Error:', e.stack);
   }
-  console.log(data)
-})*/
+}
 
-console.log(fs.readFile('highscore.txt', 'utf8', function(err, data) {
-    if (err) throw err;
-    console.log(data);
-}));
+// sort highscores
+function sortHighscores(score) {
+    // string to array
+  let scoreArray = score.split("\n");
+  for (let i = 0; i < scoreArray.length; i++) {
+    scoreArray[i] = scoreArray[i].split(";");
+  }
+  // sort array
+  scoreArray = scoreArray.sort(function(a, b){return a[1] - b[1]});
+    // array to string
+  for (let i = 0; i < scoreArray.length; i++) {
+    scoreArray[i] = scoreArray[i].join(";");
+  }
+  highScore = scoreArray.join("\n");
+}
+
+function displayHighscores() {
+  console.log("\nHighscores:\n" + highScore.replace(/[;]/g, ", Moves: "));
+}
 
 function askUser() {
   return prompt("\u00AB Which way to go? \u00BB (w = \u2191, a = \u2190, s = \u2193, d = \u2192) ");
@@ -260,6 +277,7 @@ class Map {
 
 // play function
 function playGame(height, width, percentHoles) {
+  readHighscores();
   // ask for username
   console.log("\n");
   playerName = prompt("\u00AB Greetings, stranger! This looks like a treasure island, huh? What's your name? \u00BB ");
@@ -297,10 +315,12 @@ function playGame(height, width, percentHoles) {
 
 // write highscore
 function writeHighScore(moves) {
-  highScore = highScore + playerName + "; " + moves + "\n"
+  highScore = highScore + "\n" + playerName + ";" + moves
+  sortHighscores(highScore);
+  displayHighscores(highScore);
   fs.writeFile("highscore.txt", highScore, function (err) {
     if (err) return console.log(err);
-    console.log('Hello World > helloworld.txt');
+    console.log('Error writing highscore.');
   });
 }
 
@@ -325,7 +345,7 @@ function playAgain() {
 const width = 20; // width of map fields
 const height = 10; // height of map fields
 const percentageHoles = 0.3; // percentage of holes on the map
-const fov = 5; // field of view distance
+const fov = 2; // field of view distance
 
 // call to play the game
 playGame(height, width, percentageHoles, fov);
