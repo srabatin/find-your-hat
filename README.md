@@ -11,6 +11,6 @@
 - count moves to solve map DONE
 - ask for player name and use it in game messages DONE
 - change story from find hat to find hidden chest of gold DONE
-- take field of view as parameter
+- take field of view as parameter DONE
 - ask to play again when game is over
 - save to highscore.txt

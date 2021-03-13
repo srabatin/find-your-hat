@@ -11,6 +11,7 @@ let userInput = "";
 let gameOn = true;
 let moves = 1;
 let playerName = "";
+
 function askUser() {
   return prompt("Which way to go? w = \u2191, a = \u2190, s = \u2193, d = \u2192");
 }
@@ -100,13 +101,13 @@ class Map {
     let playerPosition = this.initiallyLocatePlayer()
     for (let i = 0; i < shadowMap.length; i++) { // rows
       for (let j = 0; j < shadowMap[i].length; j++) { // cols
-        if (i < playerPosition[0] - 2 || i > playerPosition[0] + 2 || j < playerPosition[1] - 2 || j > playerPosition[1] + 2) {
+        if (i < playerPosition[0] - fov || i > playerPosition[0] + fov || j < playerPosition[1] - fov || j > playerPosition[1] + fov) {
           shadowMap[i][j] = fog;
         }
       }
     }
 
-    
+
     console.log("\n");
     let paintMap = "";
     let i = 0;
@@ -242,7 +243,7 @@ class Map {
 function playGame(height, width, percentHoles) {
   // ask for username
   playerName = prompt("Greetings, stranger! This looks like a treasure island, huh? What's your name? ");
-  
+
   // generate map
   let gameMap = Map.generateMap(height, width, percentHoles);
 
@@ -270,11 +271,17 @@ function playGame(height, width, percentHoles) {
 
     // move player on the map
     map1.movePlayer(userInput);
-    moves ++;
+    moves++;
   }
 }
 
+// -----------------------------------------------------------------------------------------
+
+// set game parameters
+const width = 20; // width of map fields
+const height = 10; // height of map fields
+const percentageHoles = 0.3; // percentage of holes on the map
+const fov = 3; // field of view distance
+
 // call to play the game
-playGame(10, 20, 0.3);
-
-
+playGame(height, width, percentageHoles, fov);
