@@ -13,4 +13,4 @@
 - change story from find hat to find hidden chest of gold DONE
 - take field of view as parameter DONE
 - ask to play again when game is over DONE
-- save to highscore.txt
+- save to highscore.txt DONE
