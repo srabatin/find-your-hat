@@ -1,18 +1,18 @@
 const prompt = require('prompt-sync')({ sigint: true });
-const hat = "^";
+const treasure = "x";
 const hole = "O";
 const field = "\u2591";
 const fog = "\u2593";
 const player = "\u263B";
 const path = "\u2592";
 const holeFall = "\u271D";
-const hatOn = "ê";
+const treasureFound = "\u22C6";
 let userInput = "";
 let gameOn = true;
 let moves = 1;
 let playerName = "";
 function askUser() {
-  return prompt("Which way? w = \u2191, a = \u2190, s = \u2193, d = \u2192");
+  return prompt("Which way to go? w = \u2191, a = \u2190, s = \u2193, d = \u2192");
 }
 
 class Map {
@@ -33,7 +33,7 @@ class Map {
     let emptyFields = numberOfItems - numberOfHoles - 2; // 68
 
     // generate initial array with all map fields
-    let initialArray = [player, hat];
+    let initialArray = [player, treasure];
     for (let i = 0; i < numberOfHoles; i++) {
       initialArray.push(hole);
     }
@@ -163,7 +163,6 @@ class Map {
         pos[1]++;
         break;
       default:
-        console.log("Please enter a valid command.");
         return
     }
     this.paintPlayer(oldPos);
@@ -176,27 +175,29 @@ class Map {
     // is new pos out of bounds? --> game lost!
     if (this.checkForBounds(pos)) {
       gameOn = false;
+      console.clear();
       this.print();
-      console.log("Out of bounds. You have lost the game, " + playerName + ". \nMoves: " + moves);
+      console.log("Hey, " + playerName + "! Where are you running, ya bloody traitor?!\nGame over. Moves: " + moves);
     }
 
     // is new pos a hole? --> game lost!
     else if (this.checkForHole(pos)) {
       gameOn = false;
+      console.clear();
       this.map[oldPos[0]][oldPos[1]] = path;
       this.map[pos[0]][pos[1]] = holeFall;
       this.print();
-      console.log("Oh noes, " + playerName + "! You fell into a hole! :( You have lost the game. \nMoves: " + moves);
+      console.log("Oh goddamit, " + playerName + "! You fell into a hole! \nGame over. Moves: " + moves);
     }
 
-    // is new pos a hat --> game won!
-    else if (this.checkForHat(pos)) {
+    // is new pos the treasure --> game won!
+    else if (this.checkForTreasure(pos)) {
       gameOn = false;
       console.clear();
       this.map[oldPos[0]][oldPos[1]] = path;
-      this.map[pos[0]][pos[1]] = hatOn;
+      this.map[pos[0]][pos[1]] = treasureFound;
       this.print();
-      console.log("Gratulations, " + playerName + "! You have found the hat! <:D You have won the game! \nMoves: " + moves);
+      console.log("I knew it, " + playerName + "! You are a great pirate! You have found the treasure!\nGame won! Moves: " + moves);
     }
 
     // if new pos is 
@@ -225,14 +226,14 @@ class Map {
     return outOfBounds;
   }
 
-  // check the current position for hat
-  checkForHat(pos) {
-    let hatFound = false;
+  // check the current position for treasure
+  checkForTreasure(pos) {
+    let treasureFound = false;
     let coordsToCheck = this.map[pos[0]][pos[1]];
-    if (coordsToCheck === hat) {
-      hatFound = true;
+    if (coordsToCheck === treasure) {
+      treasureFound = true;
     }
-    return hatFound;
+    return treasureFound;
   }
 
 }
@@ -240,7 +241,7 @@ class Map {
 // play function
 function playGame(height, width, percentHoles) {
   // ask for username
-  playerName = prompt("Please enter your name: ");
+  playerName = prompt("Greetings, stranger! This looks like a treasure island, huh? What's your name? ");
   
   // generate map
   let gameMap = Map.generateMap(height, width, percentHoles);
