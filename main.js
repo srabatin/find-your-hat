@@ -2,12 +2,14 @@ const prompt = require('prompt-sync')({ sigint: true });
 const hat = "^";
 const hole = "O";
 const field = "\u2591";
+const fog = "\u2593";
 const player = "\u263B";
 const path = "\u2592";
 const holeFall = "\u271D";
 const hatOn = "ê";
 let userInput = "";
 let gameOn = true;
+let moves = 1;
 function askUser() {
   return prompt("Which way? w = \u2191, a = \u2190, s = \u2193, d = \u2192");
 }
@@ -22,7 +24,7 @@ class Map {
 
   // generate the game map
   static generateMap(rows, cols, percentage) { //10, 10, 0.35 gives good results
-    let map = [];
+    let mapArray = [];
 
     // calculate map parameters
     let numberOfItems = rows * cols; //zb 100
@@ -46,7 +48,7 @@ class Map {
       }
       return a;
     }
-    map = shuffle(initialArray);
+    mapArray = shuffle(initialArray);
 
     // splice initial array into map
     function chunkify(a, n, balanced) {
@@ -80,8 +82,8 @@ class Map {
       }
       return out;
     }
-    map = chunkify(map, rows, true);
-    return map;
+    mapArray = chunkify(mapArray, rows, true);
+    return mapArray;
   }
 
   // prints the map and stores information about dimensions
@@ -89,12 +91,37 @@ class Map {
     let rows = this.map.length;
     this.rows = this.map.length;
     this.cols = this.map[0].length;
-    let i = 0;
+
+    // create shadowMap
+    const shadowMap = JSON.parse(JSON.stringify(this.map));
+
+    // fog fields
+    let playerPosition = this.initiallyLocatePlayer()
+    for (let i = 0; i < shadowMap.length; i++) { // rows
+      for (let j = 0; j < shadowMap[i].length; j++) { // cols
+        if (i < playerPosition[0] - 2 || i > playerPosition[0] + 2 || j < playerPosition[1] - 2 || j > playerPosition[1] + 2) {
+          shadowMap[i][j] = fog;
+        }
+      }
+    }
+
+    
     console.log("\n");
+    let paintMap = "";
+    let i = 0;
     while (i < rows) {
-      console.log(this.map[i].join(""));
+
+      if (gameOn) {
+        paintMap = paintMap + shadowMap[i].join("") + "\n";
+      } else {
+        paintMap = paintMap + this.map[i].join("") + "\n";
+      }
       i++;
     }
+
+    console.log(paintMap);
+
+
   }
 
   // find the player for first round
@@ -103,14 +130,18 @@ class Map {
     let posCol = 0;
     let position = [];
     for (let i = 0; i < this.map.length; i++) {
-      if (this.map[i].indexOf(player) > -1) {
+      if (this.map[i].indexOf(holeFall) > -1) {
+        posCol = this.map[i].indexOf(holeFall);
+        posRow = i;
+        break;
+      } else if (this.map[i].indexOf(player) > -1) {
         posCol = this.map[i].indexOf(player);
         posRow = i;
         break;
       };
     }
     position = [posRow, posCol]
-    this.playerPosition = position;
+    return position;
   }
 
   // process the user input and move the player
@@ -142,28 +173,29 @@ class Map {
     let pos = this.playerPosition;
 
     // is new pos out of bounds? --> game lost!
-     if (this.checkForBounds(pos)) {
-      this.print();
-      console.log("Out of bounds. You have lost the game.");
+    if (this.checkForBounds(pos)) {
       gameOn = false;
+      this.print();
+      console.log("Out of bounds. You have lost the game. \nMoves: " + moves);
     }
 
     // is new pos a hole? --> game lost!
     else if (this.checkForHole(pos)) {
+      gameOn = false;
       this.map[oldPos[0]][oldPos[1]] = path;
       this.map[pos[0]][pos[1]] = holeFall;
       this.print();
-      console.log("Oh noes! You fell into a hole! :( You have lost the game.");
-      gameOn = false;
+      console.log("Oh noes! You fell into a hole! :( You have lost the game. \nMoves: " + moves);
     }
 
     // is new pos a hat --> game won!
     else if (this.checkForHat(pos)) {
+      gameOn = false;
+      console.clear();
       this.map[oldPos[0]][oldPos[1]] = path;
       this.map[pos[0]][pos[1]] = hatOn;
       this.print();
-      console.log("Hooray! You have found the hat! <:D You have won the game!");
-      gameOn = false;
+      console.log("Hooray! You have found the hat! <:D You have won the game! \nMoves: " + moves);
     }
 
     // if new pos is 
@@ -224,7 +256,7 @@ function playGame(height, width, percentHoles) {
 
     // initially locate the player
     while (!gameInitialized) {
-      map1.initiallyLocatePlayer();
+      map1.playerPosition = map1.initiallyLocatePlayer();
       gameInitialized = true;
     }
 
@@ -233,23 +265,11 @@ function playGame(height, width, percentHoles) {
 
     // move player on the map
     map1.movePlayer(userInput);
+    moves ++;
   }
 }
 
 // call to play the game
-playGame(20, 50, 0.3);
+playGame(10, 20, 0.3);
 
 
-/* todo:
-move check for in boundaries in separate method DONE
-move playgame logic in function and call it DONE
-rename field to map DONE
-separate player char and path char DONE
-player char = smiley DONE
-path char = dark field DONE
-fall in hole = cross DONE
-always only reveal the field characters around the player: when painting map, create copy of map array and replace all map fields around player and 8 view-fields with dark-shade char
-count moves to solve map
-ask for player name
-save to highscore.txt
-*/
