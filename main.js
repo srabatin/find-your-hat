@@ -13,7 +13,7 @@ let moves = 1;
 let playerName = "";
 
 function askUser() {
-  return prompt("Which way to go? w = \u2191, a = \u2190, s = \u2193, d = \u2192");
+  return prompt("\u00AB Which way to go? \u00BB (w = \u2191, a = \u2190, s = \u2193, d = \u2192) ");
 }
 
 class Map {
@@ -178,7 +178,8 @@ class Map {
       gameOn = false;
       console.clear();
       this.print();
-      console.log("Hey, " + playerName + "! Where are you running, ya bloody traitor?!\nGame over. Moves: " + moves);
+      console.log("\u00AB Hey, " + playerName + "! Where are you running, ya bloody traitor?! \u00BB\nGame over. Moves: " + moves);
+      playAgain();
     }
 
     // is new pos a hole? --> game lost!
@@ -188,7 +189,8 @@ class Map {
       this.map[oldPos[0]][oldPos[1]] = path;
       this.map[pos[0]][pos[1]] = holeFall;
       this.print();
-      console.log("Oh goddamit, " + playerName + "! You fell into a hole! \nGame over. Moves: " + moves);
+      console.log("\u00AB Oh goddamit, " + playerName + "! You fell into a hole! \u00BB\nGame over. Moves: " + moves);
+      playAgain();
     }
 
     // is new pos the treasure --> game won!
@@ -198,7 +200,8 @@ class Map {
       this.map[oldPos[0]][oldPos[1]] = path;
       this.map[pos[0]][pos[1]] = treasureFound;
       this.print();
-      console.log("I knew it, " + playerName + "! You are a great pirate! You have found the treasure!\nGame won! Moves: " + moves);
+      console.log("\u00AB I knew it, " + playerName + "! You are a great pirate! You have found the treasure!\u00BB\nGame won! Moves: " + moves);
+      playAgain();
     }
 
     // if new pos is 
@@ -242,7 +245,8 @@ class Map {
 // play function
 function playGame(height, width, percentHoles) {
   // ask for username
-  playerName = prompt("Greetings, stranger! This looks like a treasure island, huh? What's your name? ");
+  console.log("\n");
+  playerName = prompt("\u00AB Greetings, stranger! This looks like a treasure island, huh? What's your name? \u00BB ");
 
   // generate map
   let gameMap = Map.generateMap(height, width, percentHoles);
@@ -272,6 +276,21 @@ function playGame(height, width, percentHoles) {
     // move player on the map
     map1.movePlayer(userInput);
     moves++;
+  }
+}
+
+function playAgain() {
+  console.log("\n");
+  let playAgain = prompt("\u00AB Arrrrrr, play again my friend? y means yes and n means no! \u00BB ");
+  if (playAgain === "y") {
+    userInput = "";
+    gameOn = true;
+    moves = 1;
+    playerName = "";
+    console.log("\n");
+    playGame(height, width, percentageHoles, fov);
+  } else if (playAgain === "n" ) {
+    console.log("\n\u00AB Farewell, my friend! \u00BB\n")
   }
 }
 
