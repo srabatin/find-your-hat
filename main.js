@@ -1,5 +1,6 @@
 const prompt = require('prompt-sync')({ sigint: true });
 const fs = require('fs');
+
 const treasure = "x";
 const hole = "O";
 const field = "\u2591";
@@ -8,6 +9,7 @@ const player = "\u263B";
 const path = "\u2592";
 const holeFall = "\u271D";
 const treasureFound = "\u22C6";
+
 let userInput = "";
 let gameOn = true;
 let moves = 1;
@@ -139,12 +141,10 @@ class Map {
       }
     }
 
-
     console.log("\n");
     let paintMap = "";
     let i = 0;
     while (i < rows) {
-
       if (gameOn) {
         paintMap = paintMap + shadowMap[i].join("") + "\n";
       } else {
@@ -154,7 +154,6 @@ class Map {
     }
 
     console.log(paintMap);
-
 
   }
 
@@ -237,7 +236,7 @@ class Map {
       playAgain();
     }
 
-    // if new pos is 
+    // if new pos is map field
     else {
       this.map[oldPos[0]][oldPos[1]] = path;
       this.map[pos[0]][pos[1]] = player;
@@ -272,14 +271,13 @@ class Map {
     }
     return treasureFound;
   }
-
 }
 
 // play function
 function playGame(height, width, percentHoles) {
   readHighscores();
   // ask for username
-  console.log("\n");
+  console.clear();
   playerName = prompt("\u00AB Greetings, stranger! This looks like a treasure island, huh? What's your name? \u00BB ");
 
   // generate map
@@ -339,10 +337,10 @@ function playAgain() {
 // -----------------------------------------------------------------------------------------
 
 // set game parameters
-const width = 10; // width of map fields
-const height = 5; // height of map fields
-const percentageHoles = 0.1; // percentage of holes on the map
-const fov = 5; // field of view distance
+const width = 20; // width of map fields
+const height = 10; // height of map fields
+const percentageHoles = 0.3; // percentage of holes on the map
+const fov = 2; // field of view distance
 
 // call to play the game
 playGame(height, width, percentageHoles, fov);
