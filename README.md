@@ -1,6 +1,6 @@
 
-# Find your hat"
-## Codecademy JavaScript Learning Project 
+# Find the treasure
+## Fork of Codecademy JavaScript Learning Project "Find your hat"
 
 ### Addons: 
 - change story from find hat to find hidden chest of gold
