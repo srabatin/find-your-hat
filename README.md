@@ -2,7 +2,7 @@
 # Find the treasure
 ## Fork of Codecademy JavaScript Learning Project "Find your hat"
 
-### Addons: 
+### Add-ons: 
 - change story from find hat to find hidden chest of gold
 - rename field to map
 - separate player char and path char
@@ -13,5 +13,14 @@
 - count moves to solve map
 - save scores to highscore.txt and display them when winning
 - ask to play again when game is over
+
+Instructions:
+1. Set game parameters in main.js at the end of the file: 
+- width = 20; // width of map fields
+- height = 10; // height of map fields
+- percentageHoles = 0.3; // percentage of holes on the map
+- fov = 2; // field of view distance
+2. Run in console with node main.js
+3. Play!
 
 See [Codecademy](https://www.codecademy.com/paths/front-end-engineer-career-path/tracks/fecp-javascript-syntax-part-iii/modules/fecp-challenge-project-find-your-hat/projects/find-your-hat ) for project description.
