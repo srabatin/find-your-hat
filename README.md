@@ -14,7 +14,13 @@
 - save scores to highscore.txt and display them when winning
 - ask to play again when game is over
 
-Instructions:
+### To-Do:
+- Create a “hard mode” where one or more holes are added after certain turns.
+- Improve graphics, see [package](https://github.com/cronvel/terminal-kit)
+- Validate if field can be won 
+- Refactoring!
+
+### Instructions:
 1. Set game parameters in main.js at the end of the file: 
 - width = 20; // width of map fields
 - height = 10; // height of map fields
