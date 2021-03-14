@@ -318,15 +318,12 @@ function writeHighScore(moves) {
   highScore = highScore + "\n" + playerName + ";" + moves
   sortHighscores(highScore);
   displayHighscores(highScore);
-  fs.writeFile("highscore.txt", highScore, function (err) {
-    if (err) return console.log(err);
-    console.log('Error writing highscore.');
-  });
+  fs.writeFileSync("highscore.txt", highScore);
 }
 
 function playAgain() {
   console.log("\n");
-  let playAgain = prompt("\u00AB Arrrrrr, play again my friend? y means yes and n means no! \u00BB ");
+  let playAgain = prompt("\u00AB Arrrrrr, play again my friend? [Y] means yes and [N] means no! \u00BB ");
   if (playAgain === "y") {
     userInput = "";
     gameOn = true;
@@ -342,10 +339,10 @@ function playAgain() {
 // -----------------------------------------------------------------------------------------
 
 // set game parameters
-const width = 20; // width of map fields
-const height = 10; // height of map fields
-const percentageHoles = 0.3; // percentage of holes on the map
-const fov = 2; // field of view distance
+const width = 10; // width of map fields
+const height = 5; // height of map fields
+const percentageHoles = 0.1; // percentage of holes on the map
+const fov = 5; // field of view distance
 
 // call to play the game
 playGame(height, width, percentageHoles, fov);

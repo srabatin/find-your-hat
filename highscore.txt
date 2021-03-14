@@ -1,4 +1,4 @@
-Bernd;5
-Klaus;6
+Wanda;5
+Hans;11
 Michi;18
 Hannah;56
