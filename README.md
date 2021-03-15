@@ -15,7 +15,7 @@
 - ask to play again when game is over
 
 ### To-Do:
-- Ask for player name only on the first time playing
+- Ask for player name only on the first time playing DONE
 - Create a “hard mode” where one or more holes are added after certain turns.
 - Improve graphics, see [package](https://github.com/cronvel/terminal-kit)
 - Validate if field can be won 

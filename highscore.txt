@@ -1,5 +1,7 @@
+Nina;1
 Wanda;5
 Hans;11
+Olga;11
 Michi;18
 Simon;33
 Hannah;56

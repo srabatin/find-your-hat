@@ -47,7 +47,7 @@ function displayHighscores() {
 }
 
 function askUser() {
-  return prompt("\u00AB Which way to go? \u00BB (w = \u2191, a = \u2190, s = \u2193, d = \u2192) ");
+  return prompt("\u00AB Which way to go, " + playerName + "? \u00BB (w = \u2191, a = \u2190, s = \u2193, d = \u2192) ");
 }
 
 class Map {
@@ -154,7 +154,6 @@ class Map {
     }
 
     console.log(paintMap);
-
   }
 
   // find the player for first round
@@ -203,36 +202,31 @@ class Map {
   // paint the player on the map 
   paintPlayer(oldPos) {
     let pos = this.playerPosition;
+    let check = this.checkField(pos);
 
-    // is new pos out of bounds? --> game lost!
-    if (this.checkField(pos) === "bounds") {
+    // is new pos out of bounds ohr hole? --> game lost!
+    if (check === "bounds" || check === "hole" || check === "treasure") {
       gameOn = false;
       console.clear();
-      this.print();
-      console.log("\u00AB Hey, " + playerName + "! Where are you running, ya bloody traitor?! \u00BB\nGame over. Moves: " + moves);
-      playAgain();
-    }
-
-    // is new pos a hole? --> game lost!
-    else if (this.checkField(pos) === "hole") {
-      gameOn = false;
-      console.clear();
-      this.map[oldPos[0]][oldPos[1]] = path;
-      this.map[pos[0]][pos[1]] = holeFall;
-      this.print();
-      console.log("\u00AB Oh goddamit, " + playerName + "! You fell into a hole! \u00BB\nGame over. Moves: " + moves);
-      playAgain();
-    }
-
-    // is new pos the treasure --> game won!
-    else if (this.checkField(pos) === "treasure") {
-      gameOn = false;
-      console.clear();
-      this.map[oldPos[0]][oldPos[1]] = path;
-      this.map[pos[0]][pos[1]] = treasureFound;
-      this.print();
-      console.log("\u00AB I knew it, " + playerName + "! You are a great pirate! You have found the treasure!\u00BB\nGame won! Moves: " + moves);
-      writeHighScore(moves);
+      if (check === "hole" || check === "treasure") {
+        this.map[oldPos[0]][oldPos[1]] = path;
+        if (check === "hole") {
+          this.map[pos[0]][pos[1]] = holeFall;
+        } else {
+          this.map[pos[0]][pos[1]] = treasureFound;
+        }
+        this.print();
+        if (check === "hole") {
+          console.log("\u00AB Argh, goddamit, " + playerName + "! You fell into a hole! \u00BB\nGame over. Moves: " + moves);
+        } else {
+          console.log("\u00AB I knew it, " + playerName + "! You are a great pirate! You have found the treasure!\u00BB\nGame won! Moves: " + moves);
+          writeHighScore(moves);
+        }
+      } else {
+        this.map[oldPos[0]][oldPos[1]] = path;
+        this.print();
+        console.log("\u00AB Hey, " + playerName + "! Where are you running, ya bloody traitor?! \u00BB\nGame over. Moves: " + moves);
+      }
       playAgain();
     }
 
@@ -243,7 +237,7 @@ class Map {
     }
   }
 
-  // refactor check field for bounds, hole, treasure
+  // check field for bounds, hole, treasure
   checkField(pos) {
     if (pos[0] < 0 || pos[1] < 0 || pos[0] > this.rows - 1 || pos[1] > this.cols - 1) {
       return "bounds";
@@ -260,7 +254,9 @@ function playGame(height, width, percentHoles) {
   readHighscores();
   // ask for username
   console.clear();
-  playerName = prompt("\u00AB Greetings, stranger! This looks like a treasure island, huh? What's your name? \u00BB ");
+  if (!playerName) {
+    playerName = prompt("\u00AB Greetings, stranger! This looks like a treasure island, huh? What's your name? \u00BB ");
+  }
 
   // generate map
   let gameMap = Map.generateMap(height, width, percentHoles);
@@ -308,7 +304,7 @@ function playAgain() {
     userInput = "";
     gameOn = true;
     moves = 1;
-    playerName = "";
+    //playerName = "";
     console.log("\n");
     playGame(height, width, percentageHoles, fov);
   } else if (playAgain === "n") {
