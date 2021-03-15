@@ -20,22 +20,22 @@ let highScore = "";
 function readHighscores() {
   try {
     var data = fs.readFileSync('highscore.txt', 'utf8');
-    highScore = data;    
-  } catch(e) {
+    highScore = data;
+  } catch (e) {
     console.log('Error:', e.stack);
   }
 }
 
 // sort highscores
 function sortHighscores(score) {
-    // string to array
+  // string to array
   let scoreArray = score.split("\n");
   for (let i = 0; i < scoreArray.length; i++) {
     scoreArray[i] = scoreArray[i].split(";");
   }
   // sort array
-  scoreArray = scoreArray.sort(function(a, b){return a[1] - b[1]});
-    // array to string
+  scoreArray = scoreArray.sort(function (a, b) { return a[1] - b[1] });
+  // array to string
   for (let i = 0; i < scoreArray.length; i++) {
     scoreArray[i] = scoreArray[i].join(";");
   }
@@ -205,7 +205,7 @@ class Map {
     let pos = this.playerPosition;
 
     // is new pos out of bounds? --> game lost!
-    if (this.checkForBounds(pos)) {
+    if (this.checkField(pos) === "bounds") {
       gameOn = false;
       console.clear();
       this.print();
@@ -214,7 +214,7 @@ class Map {
     }
 
     // is new pos a hole? --> game lost!
-    else if (this.checkForHole(pos)) {
+    else if (this.checkField(pos) === "hole") {
       gameOn = false;
       console.clear();
       this.map[oldPos[0]][oldPos[1]] = path;
@@ -225,7 +225,7 @@ class Map {
     }
 
     // is new pos the treasure --> game won!
-    else if (this.checkForTreasure(pos)) {
+    else if (this.checkField(pos) === "treasure") {
       gameOn = false;
       console.clear();
       this.map[oldPos[0]][oldPos[1]] = path;
@@ -243,33 +243,15 @@ class Map {
     }
   }
 
-  // check the current position for hole
-  checkForHole(pos) {
-    let fallInHole = false;
-    let coordsToCheck = this.map[pos[0]][pos[1]];
-    if (coordsToCheck === hole) {
-      fallInHole = true;
-    }
-    return fallInHole;
-  }
-
-  // check if current position off the map
-  checkForBounds(pos) {
-    let outOfBounds = false;
+  // refactor check field for bounds, hole, treasure
+  checkField(pos) {
     if (pos[0] < 0 || pos[1] < 0 || pos[0] > this.rows - 1 || pos[1] > this.cols - 1) {
-      outOfBounds = true;
+      return "bounds";
+    } else if (this.map[pos[0]][pos[1]] === hole) {
+      return "hole";
+    } else if (this.map[pos[0]][pos[1]] === treasure) {
+      return "treasure";
     }
-    return outOfBounds;
-  }
-
-  // check the current position for treasure
-  checkForTreasure(pos) {
-    let treasureFound = false;
-    let coordsToCheck = this.map[pos[0]][pos[1]];
-    if (coordsToCheck === treasure) {
-      treasureFound = true;
-    }
-    return treasureFound;
   }
 }
 
