@@ -321,8 +321,8 @@ function writeHighScore(moves) {
 
 function playAgain() {
   console.log("\n");
-  let playAgain = prompt("\u00AB Arrrrrr, play again my friend? [Y] means yes and [N] means no! \u00BB ");
-  if (playAgain === "y") {
+  let playAgain = prompt("\u00AB Arrrrrr, play again my friend? [y] means yes and [n] means no! \u00BB ");
+  if (playAgain === "y" || playAgain === "Y" || playAgain === "yes" || playAgain === "YES") {
     userInput = "";
     gameOn = true;
     moves = 1;
